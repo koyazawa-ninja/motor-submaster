@@ -4,7 +4,7 @@
   "mapSpecVersion": "0.5",
   "npcGeneratorVersion": "2.3.8",
   "sourceRepository": "koyazawa-ninja/trpg-sheet-map-compiler",
-  "sourceCommit": "ab333e16a94923c6e900e003c325fc8559c512af",
+  "sourceCommit": "5b2ebca56700daa69b498aa0c201fd02a38ed4d9",
   "publicRepository": "koyazawa-ninja/motor-submaster",
   "pagesUrl": "https://koyazawa-ninja.github.io/motor-submaster/",
   "exceljsBrowser": {
