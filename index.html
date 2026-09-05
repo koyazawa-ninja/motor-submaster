@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
     <title>モーターサブマスター v1.0.0</title>
-    <script type="module" crossorigin src="./assets/index-DgG6xfNV.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BKC-df1N.css">
+    <script type="module" crossorigin src="./assets/index-DpU6MDFz.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BeKWGbOu.css">
   </head>
   <body>
     <header class="command-header">
@@ -59,7 +59,10 @@
           aria-haspopup="dialog"
           aria-controls="help-dialog"
         >使い方</button>
-        <button type="button" id="load-sample" class="control primary">サンプルを開く</button>
+        <details id="sample-picker" class="sample-picker">
+          <summary class="control primary">サンプルを開く</summary>
+          <div id="sample-options" class="sample-options" aria-label="同梱サンプル"></div>
+        </details>
         <label class="control file-control" for="open-json">
           JSONを開く
           <input id="open-json" type="file" accept="application/json,.json">
@@ -188,7 +191,7 @@
           </section>
           <section aria-labelledby="help-sample-heading">
             <h3 id="help-sample-heading">まず試してみたい</h3>
-            <p>まず試すなら「サンプルを開く」を押します。同梱サンプルが読み込まれ、検証結果とプレビューをすぐ確認できます。</p>
+            <p>まず試すなら「サンプルを開く」から同梱された6種類のマップを選びます。アプリ起動時は工業街のサンプルが表示され、検証結果とプレビューをすぐ確認できます。</p>
             <p>サンプルから自分のJSONへ入れ替えるときは、「入力を空にする」でマップデータ JSONを空にしてから貼り付けられます。</p>
           </section>
           <section aria-labelledby="help-ai-heading">
