@@ -1,6 +1,6 @@
 THIRD-PARTY NOTICES
 
-This notice inventory is generated for the MOTOR SUBMASTER public distribution candidate.
+This notice inventory is generated for the MOTOR SUBMASTER public distribution artifact.
 It covers code actually present in the ExcelJS browser artifact and the application runtime dependency closure.
 
 ExcelJS browser artifact distributed components: 75

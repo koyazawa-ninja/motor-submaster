@@ -4,7 +4,11 @@
 
 ## Web version
 
-このrepositoryは生成済みWeb配布専用です。ブラウザで `index.html` を開くか、GitHub Pagesの公開URLから利用します。
+GitHub PagesのHTTPS公開版はこちらから利用できます。
+
+https://koyazawa-ninja.github.io/motor-submaster/
+
+このrepositoryは生成済みWeb配布専用です。ブラウザで `index.html` を開くか、上記GitHub Pagesの公開URLから利用します。
 
 アプリはlocal-firstです。貼り付けたシナリオやMapSpecデータを、アプリ自身がapplication backendへ送信することはありません。AIとの受け渡しも、利用者がClipboardまたは保存した指示書を選んで外部サービスへ渡す経路だけです。
 
