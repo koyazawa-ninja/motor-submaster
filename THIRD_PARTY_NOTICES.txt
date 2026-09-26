@@ -4,8 +4,8 @@ This notice inventory is generated for the MOTOR SUBMASTER public distribution a
 It covers code actually present in the ExcelJS browser artifact and the application runtime dependency closure.
 
 ExcelJS browser artifact distributed components: 75
-Application runtime components: 4
-Notice inventory components: 79
+Application runtime components: 5
+Notice inventory components: 80
 Build-only provenance closure: 426 packages (not a runtime notice inventory).
 
 Build-only Babel, Browserslist, Caniuse, Browserify, and related compiler packages are recorded in private build provenance only unless their code is present in the distributed ExcelJS artifact.
@@ -3878,6 +3878,49 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 APPLICATION RUNTIME COMPONENTS
+
+-------------------------------------------------------------------------------
+@zip.js/zip.js@2.18.2
+Role: application-runtime
+Why required: Application runtime ZIP work-data import in src/image-workspace/project-file.js.
+Declared license expression: BSD-3-Clause
+Resolved license expression: BSD-3-Clause
+Repository: git+https://github.com/gildas-lormeau/zip.js.git
+NPM tarball resolved: https://registry.npmjs.org/@zip.js/zip.js/-/zip.js-2.18.2.tgz
+NPM tarball integrity: sha512-J1jwg0Kv5Aab50VlVZ6hp2rzGL/J0YLjBnkF6oJoIjmpxx9+tHgjRELGKryKnDZEcGXKjv7ibwxAziFiWHdR2A==
+Installed package lock path: node_modules/@zip.js/zip.js
+Evidence kind: installed-package-license-file
+Evidence source: LICENSE
+Evidence SHA-256: 1b7ebc8d7889ed25491484ab2b102370742ca6c0b26650a0c62cc2269b579b84
+License/notice text:
+BSD 3-Clause License
+
+Copyright (c) 2023, Gildas Lormeau
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -------------------------------------------------------------------------------
 ajv@8.20.0

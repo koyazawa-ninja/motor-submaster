@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
-    <title>モーターサブマスター v1.0.0</title>
-    <script type="module" crossorigin src="./assets/index-VTDzB-8q.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BeKWGbOu.css">
+    <title>モーターサブマスター v2.0.0</title>
+    <script type="module" crossorigin src="./assets/index-B9dwvgJp.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BTtCzw4I.css">
   </head>
   <body>
     <header class="command-header">
@@ -14,12 +14,17 @@
         <h1 class="brand-line">モーターサブマスター</h1>
         <div class="brand-metadata">
           <p class="subtitle">ニンジャスレイヤーTRPG向け AI活用支援ツール</p>
-          <span class="brand-version">v1.0.0</span>
+          <span class="brand-version">v2.0.0</span>
         </div>
       </div>
+      <div class="header-utilities">
+      <button type="button" id="open-help" class="control help-control" aria-haspopup="dialog" aria-controls="help-dialog">使い方・できること</button>
+      <button type="button" id="open-external-tools" class="control external-tools-entry" aria-haspopup="dialog" aria-controls="external-tools-dialog">外部リンク保存</button>
+      <button type="button" id="open-presentation-preferences" class="control preferences-entry" aria-haspopup="dialog" aria-controls="presentation-preferences-dialog">表示設定</button>
       <div class="header-status" id="global-status" aria-live="polite" data-level="idle">
         <span class="status-beacon" aria-hidden="true"></span>
         <span id="global-status-text">システム起動中</span>
+      </div>
       </div>
     </header>
 
@@ -34,6 +39,15 @@
         tabindex="0"
       >マップ作成</button>
       <button
+        id="image-workspace-tab"
+        class="workspace-tab"
+        type="button"
+        role="tab"
+        aria-controls="image-workspace-panel"
+        aria-selected="false"
+        tabindex="-1"
+      >サムネ・挿絵・アイテム</button>
+      <button
         id="npc-workspace-tab"
         class="workspace-tab"
         type="button"
@@ -41,7 +55,25 @@
         aria-controls="npc-workspace-panel"
         aria-selected="false"
         tabindex="-1"
-      >NPCジェネレーター</button>
+      >NPCジェネレーター：設定</button>
+      <button
+        id="boss-workspace-tab"
+        class="workspace-tab"
+        type="button"
+        role="tab"
+        aria-controls="boss-workspace-panel"
+        aria-selected="false"
+        tabindex="-1"
+      >NPCジェネレーター：ボス</button>
+      <button
+        id="combat-workspace-tab"
+        class="workspace-tab"
+        type="button"
+        role="tab"
+        aria-controls="combat-workspace-panel"
+        aria-selected="false"
+        tabindex="-1"
+      >判定・戦闘処理解析</button>
     </nav>
 
     <section
@@ -52,24 +84,17 @@
       tabindex="0"
     >
       <nav class="action-deck" aria-label="主要操作">
-        <button
-          type="button"
-          id="open-help"
-          class="control help-control"
-          aria-haspopup="dialog"
-          aria-controls="help-dialog"
-        >使い方</button>
         <details id="sample-picker" class="sample-picker">
           <summary class="control primary">サンプルを開く</summary>
           <div id="sample-options" class="sample-options" aria-label="同梱サンプル"></div>
         </details>
         <label class="control file-control" for="open-json">
-          JSONを開く
+          マップデータを開く
           <input id="open-json" type="file" accept="application/json,.json">
         </label>
-        <button type="button" id="save-json" class="control">JSONを保存</button>
+        <button type="button" id="save-json" class="control">マップデータを保存</button>
         <button type="button" id="validate-map" class="control accent">マップを点検・表示</button>
-        <button type="button" id="open-ai-instructions" class="control">AIに渡す作成指示</button>
+        <span class="clarity-tip"><button type="button" id="open-ai-instructions" class="control" aria-describedby="map-ai-instruction-tip">AIに渡す作成指示</button><span id="map-ai-instruction-tip" class="clarity-tip-bubble" role="tooltip">対話AIへ貼り付け、マップデータを作ってもらうための指示を開きます。</span></span>
         <button
           type="button"
           id="open-blank-map-sheet"
@@ -77,20 +102,36 @@
           aria-haspopup="dialog"
           aria-controls="blank-map-sheet-dialog"
         >空のマップシートを作る</button>
-        <button type="button" id="export-xlsx" class="control export" disabled>XLSXを書き出す</button>
+        <div class="xlsx-export-actions">
+          <label class="xlsx-export-option">
+            <span class="xlsx-export-option-label">Excelにネヤ式参照シートを追加</span>
+            <span class="xlsx-toggle-control">
+              <input id="add-neya-reference-sheet" class="xlsx-export-toggle" type="checkbox" role="switch" aria-checked="false" aria-describedby="neya-reference-tip">
+              <span class="xlsx-toggle-terminal" aria-hidden="true">
+                <span class="xlsx-toggle-lamp"></span>
+                <span id="xlsx-export-toggle-state" class="xlsx-toggle-state">OFF</span>
+              </span>
+            </span>
+            <span id="neya-reference-tip" class="clarity-tip-bubble" role="tooltip">Google Sheetsで参加PCのネヤ式キャラクターシートを参照するための補助シートを追加します。</span>
+          </label>
+          <button type="button" id="export-xlsx" class="control export" aria-describedby="export-xlsx-help" disabled>Excel形式（.xlsx）で保存</button>
+        </div>
+        <button type="button" class="control help-control" data-open-help>この画面の使い方</button>
       </nav>
+      <p id="export-xlsx-help" class="control-help" hidden>入力を点検してからExcel形式（.xlsx）で保存できます。</p>
+      <p id="xlsx-export-preference-feedback" class="control-help xlsx-export-preference-feedback" role="status" hidden></p>
 
       <main class="workspace">
       <section class="panel editor-panel" aria-labelledby="editor-heading">
         <div class="panel-heading">
           <div>
             <p class="panel-kicker">入力 / マップデータ</p>
-            <h2 id="editor-heading">マップデータ JSON</h2>
+            <h2 id="editor-heading">マップデータ</h2>
           </div>
-          <button type="button" id="clear-map-spec-input" class="control">入力を空にする</button>
+          <div class="panel-heading-actions"><button type="button" id="clear-map-spec-input" class="control">入力を空にする</button><button type="button" id="undo-source-replacement" class="control" hidden>直前の入力に戻す</button></div>
         </div>
         <textarea id="map-spec-input" spellcheck="false" aria-labelledby="editor-heading" aria-describedby="editor-help"></textarea>
-        <p id="editor-help" class="panel-help">MapSpec v0.5形式のJSONを読み込みます。JSON本体だけでも、AIが返した <code>```json ... ```</code> のコード枠ごとでも貼り付けられます。点検時に安全な構文だけを限定的に自動修正し、修正内容はログで確認できます。</p>
+        <p id="editor-help" class="panel-help">通常はマップデータを自分で書く必要はありません。AIから受け取ったマップデータや保存済みのマップデータを使えます。JSON本文だけでも、AIが返した <code>```json ... ```</code> のコード枠ごとでも貼り付けられます。</p>
       </section>
 
       <section class="panel preview-panel" aria-labelledby="preview-heading">
@@ -101,6 +142,7 @@
           </div>
           <span id="preview-meta" class="coordinate-note">—</span>
         </div>
+        <p id="preview-stale-note" class="preview-stale-note" role="status" hidden>前回点検時の表示です。現在の入力は未点検です。</p>
         <div id="preview-container" class="preview-stage" tabindex="0">
           <p class="empty-state">マップデータを点検するとプレビューが表示されます。</p>
         </div>
@@ -110,17 +152,18 @@
         <div class="panel-heading">
           <div>
             <p class="panel-kicker">入力点検</p>
-            <h2 id="validation-heading">検証結果</h2>
+            <h2 id="validation-heading">点検結果</h2>
           </div>
-          <strong id="validation-badge" class="validation-badge" data-level="idle">待機</strong>
+          <div class="validation-heading-actions"><strong id="validation-badge" class="validation-badge" data-level="idle">待機</strong></div>
         </div>
-        <div id="validation-summary" class="validation-summary" aria-live="polite">検証待ちです。</div>
+        <div id="validation-summary" class="validation-summary" aria-live="polite">点検待ちです。</div>
+        <p id="map-next-step" class="workspace-next-step" role="status">まずは「サンプルを開く」で別のマップを試すか、AIから受け取ったマップデータを貼って点検します。</p>
         <ul id="validation-list" class="validation-list"></ul>
         <section id="repair-audit" class="repair-audit" aria-labelledby="repair-audit-heading" hidden>
           <div class="repair-audit-heading">
             <div>
               <h3 id="repair-audit-heading">自動修正ログ</h3>
-              <p>JSONの意味やMapSpecの検証結果は変更せず、構文の修正内容だけを記録しています。</p>
+              <p>JSONの意味やMapSpecの点検結果は変更せず、構文の修正内容だけを記録しています。</p>
             </div>
             <button type="button" id="undo-repair" class="control repair-undo">自動修正を元に戻す</button>
           </div>
@@ -139,6 +182,7 @@
           <div>
             <h3>凡例</h3>
             <p class="panel-help summary-help">このマップで使う記号とルールを表示します。</p>
+            <p id="summary-stale-note" class="summary-stale-note" role="status" hidden>以下は前回点検済みの入力に基づく情報です。現在の入力を反映するには点検してください。</p>
             <ul id="legend-list" class="legend-list"><li>プレビュー生成待ち</li></ul>
           </div>
           <div>
@@ -162,62 +206,381 @@
         <div class="panel-heading">
           <div>
             <p class="panel-kicker">卓上支援 / NPC生成</p>
-            <h2>NPCジェネレーター</h2>
+            <h2>NPCジェネレーター：設定</h2>
+            <p class="workspace-purpose">名前・外見・内面を組み立てます。戦闘用の数値データは「ボスデータ」で作ります。</p>
           </div>
+          <div class="panel-heading-actions"><button type="button" class="control help-control" data-open-help>この画面の使い方</button></div>
         </div>
+        <div class="workspace-guidance workspace-route-guidance"><strong>まず試すなら</strong><span>条件があれば入力。「すべて生成」を押し、必要な結果をコピーします。</span><small>結果とAI指示文はこのページを閉じると失われるため、必要なものを先にコピーしてください。</small></div>
         <div id="npc-generator-host" class="npc-generator-host">
-          <p id="npc-generator-placeholder" class="npc-generator-placeholder">NPCジェネレーターを選択すると起動します。</p>
+          <p id="npc-generator-placeholder" class="npc-generator-placeholder" role="status" aria-live="polite">NPCジェネレーターを選択すると起動します。</p>
         </div>
       </div>
+    </section>
+
+    <section
+      id="image-workspace-panel"
+      class="workspace-panel image-workspace-panel"
+      role="tabpanel"
+      aria-labelledby="image-workspace-tab"
+      tabindex="0"
+      hidden
+    >
+      <div class="panel image-workspace-shell" data-image-workspace-root>
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">卓上支援 / 画像制作</p>
+            <h2 id="image-workspace-heading">サムネ・挿絵・アイテム画像作成</h2>
+            <p class="workspace-purpose">画像生成そのものは外部AIで行います。ここでは制作指示を用意し、サムネイルだけ生成したPNGを読み込んで合成できます。</p>
+          </div>
+          <div class="panel-heading-actions"><button type="button" class="control help-control" data-open-help>この画面の使い方</button></div>
+        </div>
+        <div class="image-workspace-content">
+          <div class="studio-route">
+            <label class="studio-purpose">何を作りますか<select data-image-option-axis="purpose" aria-label="画像用途"></select></label>
+            <div class="studio-steps" aria-label="制作の作業面"><button type="button" class="control" data-image-stage="prompt" aria-pressed="true">01　画像生成指示</button><button type="button" class="control" data-image-stage="compose" aria-pressed="false">02　サムネイルを仕上げる</button></div>
+          </div>
+          <div id="image-prompt-stage">
+          <div class="image-workspace-mechanical-grid">
+            <section class="image-workspace-block" aria-labelledby="image-prompt-options-heading">
+              <div class="studio-section-heading"><p class="panel-kicker">01 / 制作要件</p><h3 id="image-prompt-options-heading">情景・物品を指定</h3></div>
+              <label class="studio-field">作品タイトル・名称 <span class="studio-optional">任意 · サムネイルの文字にも使用</span><input id="image-shared-title" type="text" autocomplete="off" maxlength="400" placeholder="シナリオやアイテムの名前"></label>
+              <label class="studio-field"><span id="image-brief-label">場面・主役・伝えたい雰囲気</span><textarea id="image-brief" rows="6" placeholder="描きたい場面、主役、光や空気感。見せたい手がかりと、隠したい真相も書けます。"></textarea></label>
+              <div class="image-option-grid">
+                <label>世界観<select data-image-option-axis="worldGenre" aria-label="世界観"></select></label>
+                <label>描画形式<select data-image-option-axis="renderingStyle" aria-label="描画形式"></select></label>
+              </div>
+              <div class="studio-spoiler">
+                <label>ネタバレ方針<select data-image-option-axis="spoilerPolicy" aria-label="ネタバレ方針"></select></label>
+                <p class="panel-help">何を見せないかは、画風と別に指定できます。隠したい情報は上の入力欄へ。</p>
+              </div>
+              <div id="image-item-cutout-option" class="studio-spoiler" hidden>
+                <label class="image-disclosure-control"><input id="image-item-cutout-friendly" type="checkbox"> 切り抜きやすい単色背景を使う</label>
+                <p class="panel-help">物と見分けやすい単色の背景を指定します。周囲の情景に代わり、素材・摩耗・痕跡で来歴を伝えます。</p>
+              </div>
+              <details class="studio-details"><summary>表現を調整する <span>提示手法・情報密度</span></summary><div class="image-option-grid">
+                <label>提示手法<select data-image-option-axis="presentationTechnique" aria-label="提示手法"></select></label>
+                <label>情報密度<select data-image-option-axis="detailDensity" aria-label="情報密度"></select></label>
+              </div></details>
+            </section>
+            <section class="image-workspace-block studio-transfer" aria-labelledby="image-transfer-heading">
+              <div class="studio-section-heading"><p class="panel-kicker">02 / 外部AIで生成</p><h3 id="image-transfer-heading">制作指示を引き渡す</h3></div>
+              <p id="image-purpose-help" class="studio-lead">サムネイルの背景用に、主役と余白のある一枚を設計します。</p>
+              <ol class="studio-handoff"><li><strong>制作指示をコピー</strong><span>入力した要件と設定をまとめてコピーします。</span><button type="button" id="image-copy-prompt" class="control primary">制作指示をコピー</button><p id="image-prompt-status" class="image-workspace-status" role="status" aria-live="polite">制作指示、転送準備ヨシ。内容を確認してコピーしてください。</p></li><li><strong>対話AIに画像用の指示文を作らせる</strong><span>コピーした内容を外部の対話AIへ貼り付けます。返答に含まれる指示文を、画像生成AIへ渡してください。</span></li><li><strong id="image-final-step">できたPNGをここで仕上げる</strong><span id="image-final-help">背景を読み込み、タイトルと装飾を重ねます。</span></li></ol>
+              <div class="studio-png-handoff">
+                <div class="studio-png-handoff-copy"><span class="panel-kicker">生成後の素材づくり</span><p>単色背景を外部AIで透過素材に。</p></div>
+                <div class="studio-png-handoff-action"><button type="button" id="image-copy-transparent-png" class="control" aria-describedby="image-png-capability">透過PNG化の指示をコピー</button><p id="image-png-capability" class="studio-png-capability" role="tooltip">画像編集や透過PNGファイルの出力に対応しているかはAIによって異なります。対応するAIで使用してください。</p></div>
+                <p id="image-png-status" class="image-workspace-status" role="status" aria-live="polite"></p>
+              </div>
+              <button type="button" id="image-open-external-tools" class="control" data-open-external-tools>外部リンク保存を開く（任意）</button>
+              <details id="image-prompt-details" class="studio-details"><summary>制作指示を確認・手動コピー</summary><label class="studio-field">外部AIへ渡す全文<textarea id="image-prompt-output" rows="10" readonly></textarea></label><button type="button" id="image-save-prompt" class="control">指示をTXT保存</button></details>
+              <p class="panel-help">AIへの送信は手動です。生成結果はご自身で確認してください。作業データを保存せずにページを閉じると、制作中の内容は失われます。</p>
+            </section>
+          </div>
+          </div>
+          <div id="image-compose-stage" hidden>
+          <section class="image-project-controls" aria-labelledby="image-project-heading">
+            <div class="image-project-copy"><h3 id="image-project-heading">作業データ</h3><p>保存した作業データから、後で制作を再開できます。</p></div>
+            <div class="image-project-actions">
+              <button type="button" id="image-project-save" class="control">作業データを保存</button>
+              <label class="control file-control image-project-load"><span>作業データを読み込む</span><input id="image-project-load" type="file" accept=".zip,application/zip"></label>
+            </div>
+            <div id="image-project-result" class="image-project-result" hidden>
+              <strong>作業データZIPを準備しました</strong>
+              <p>ファイル名: <strong id="image-project-filename" class="image-project-filename"></strong></p>
+              <p>後で再開するときは「作業データを読み込む」から、この名前のZIPを選びます。</p>
+              <div class="image-project-handoff-actions">
+                <button type="button" id="image-project-pick-save" class="control primary" hidden>保存場所を選んで保存</button>
+                <button type="button" id="image-project-share" class="control" hidden>共有・ファイルに保存</button>
+                <a id="image-project-download" class="control" hidden>ダウンロード</a>
+              </div>
+              <p id="image-project-handoff-status" class="image-workspace-status" role="status" aria-live="polite"></p>
+              <details class="image-project-find-help"><summary>保存したZIPが見つからない場合</summary>
+                <p>「保存場所を選んで保存」が使える場合は、そこで選んだ場所からZIPを開いてください。通常ダウンロードの保存先や表示方法はブラウザ・端末によって異なり、アプリからは判定できません。</p>
+                <p>iPhone / iPad: 「共有・ファイルに保存」が使える場合は、共有メニューで「ファイルに保存」を選ぶと保存先を決められます。通常のダウンロードはSafariのダウンロード表示や「ファイル」アプリから確認してください。</p>
+                <p>Android: 共有が使える場合は、表示された保存先から選んでください。通常のダウンロードはブラウザの履歴やFiles系アプリから確認してください。</p>
+                <p id="image-project-capabilities" class="image-project-capabilities"></p>
+              </details>
+            </div>
+            <details class="image-project-privacy"><summary>保存データに含まれるもの</summary><p class="panel-help">作業データには、背景・装飾の元PNGや画像生成用の設定が含まれます。<br>他の人へ共有する場合は、画像の権利・個人情報・内容をご確認ください。</p></details>
+          </section>
+          <div class="studio-composer">
+          <div class="studio-inspector">
+            <section class="image-workspace-block" aria-labelledby="image-admission-heading">
+              <div class="studio-section-heading"><p class="panel-kicker">01 / 素材</p><h3 id="image-admission-heading">画像を読み込む</h3></div>
+              <div class="image-file-inputs">
+                <label class="image-file-picker"><span class="image-file-picker-label">背景画像（PNG）を選ぶ</span><span class="image-file-picker-status" data-image-file-status="background">ファイル未選択</span><input type="file" accept="image/png" data-image-file-kind="background" aria-describedby="image-admission-help"></label><button type="button" id="image-remove-background" class="control" disabled>背景を外す</button>
+              </div>
+              <details class="studio-details studio-admission-details"><summary>画像の条件・切り抜き位置</summary><p id="image-admission-help" class="panel-help">PNG形式、1枚16 MiB以下・各辺4096px以下・8,388,608画素以下。背景は比率を保ち、中央・下端に合わせて切り抜きます。</p></details>
+              <p id="image-asset-info" class="panel-help">まだ背景がありません。</p>
+              <div class="image-visual-buffer" aria-labelledby="image-buffer-heading">
+                <div><strong id="image-buffer-heading">画像容量</strong><span>VISUAL BUFFER · MP相当</span></div>
+                <progress id="image-buffer-meter" max="100" value="0" aria-labelledby="image-buffer-heading" aria-describedby="image-buffer-status">0%</progress>
+                <p id="image-buffer-status" class="panel-help" role="status">0.0 / 24 MP相当 · 余裕あり</p>
+                <details class="studio-buffer-details"><summary>容量の見方</summary><p class="panel-help">背景と装飾の合計画素数です。実際のメモリ使用量ではありません。</p></details>
+              </div>
+            </section>
+          <section class="image-workspace-block image-workspace-mechanical-controls">
+            <div class="studio-section-heading"><p class="panel-kicker">02 / 文字・仕上げ</p><h3>文字を重ねる</h3></div>
+            <label>表示タイトル<textarea id="image-composite-title" rows="2" maxlength="400" aria-describedby="image-display-title-help image-type-status" placeholder="表示タイトル（Enterで改行）"></textarea></label>
+            <p id="image-display-title-help" class="panel-help">Enterで改行。ここでの編集は作品名・画像生成指示を変えません。</p>
+            <button id="image-title-reset" type="button" class="control">作品名を使う</button>
+            <div class="studio-type-size"><label>文字サイズ<input id="image-title-size" type="range" min="16" max="120" value="48" aria-label="タイトル文字サイズ"></label><label>px<input id="image-title-size-number" aria-label="タイトル文字サイズ（px）" type="number" min="16" max="120" value="48"></label></div>
+            <p class="studio-control-divider">色とアクセント <span>COLOR / FINISH</span></p>
+            <div class="studio-type-color"><label>文字の縁色<input id="image-outline-color" type="color" value="#53349c"></label><button id="image-outline-black" type="button" class="control">縁を黒にする</button></div>
+            <div class="studio-type-color"><label>タイトル下線色<input id="image-underline-color" type="color" value="#53349c"></label><label class="image-disclosure-control"><input id="image-underline-enabled" type="checkbox" checked> タイトル下線</label></div>
+            <div class="studio-type-color"><label>最下端アクセント色<input id="image-bottom-accent-color" type="color" value="#2f80c9"></label><label class="image-disclosure-control"><input id="image-bottom-accent-enabled" type="checkbox" checked> 最下端アクセント</label></div>
+            <label>上部ラベル<input id="image-upper-label" type="text" autocomplete="off" placeholder="ラベル（任意）"></label>
+            <p id="image-type-status" class="panel-help" role="status"></p>
+            <label class="image-disclosure-control"><input id="image-disclosure-enabled" type="checkbox" checked> AI活用開示を表示</label>
+            <p class="panel-help">※『当画像の作成にはAIを活用しています』の文を最下端に薄い透かし文字で追加します。</p>
+          </section>
+          <section class="image-workspace-block"><div class="image-decoration-heading"><div class="studio-section-heading"><p class="panel-kicker">03 / 装飾</p><h3>装飾レイヤー</h3></div><span id="image-decoration-count">0 / 12</span></div>
+            <div class="image-decoration-file-actions"><label class="control file-control image-file-picker"><span class="image-file-picker-label">立ち絵・装飾を追加</span><span class="image-file-picker-status" data-image-file-status="decoration-add">ファイル未選択</span><input id="image-decoration-add" type="file" accept="image/png" data-image-file-kind="decoration-add"></label><label class="control file-control image-file-picker"><span class="image-file-picker-label">選択を置換</span><span class="image-file-picker-status" data-image-file-status="decoration-replace">ファイル未選択</span><input id="image-decoration-replace" type="file" accept="image/png" data-image-file-kind="decoration-replace" disabled></label></div>
+            <div id="image-decoration-list" class="image-decoration-list" role="group" aria-label="装飾レイヤー。先頭が背面、末尾が前面です"></div>
+            <button id="image-undo-decoration-delete" type="button" class="control" hidden>直前に削除した装飾を元に戻す</button>
+            <fieldset id="image-decoration-controls" disabled><legend class="studio-optional">レイヤーを選択すると操作できます</legend><label class="image-disclosure-control"><input id="image-decoration-visible" type="checkbox" checked> 選択した装飾を表示</label><div class="studio-transform"><label>X位置<input data-image-transform="x" aria-label="選択装飾X位置" type="number" min="-4096" max="1280" step="1" value="0"></label><label>Y位置<input data-image-transform="y" aria-label="選択装飾Y位置" type="number" min="-4096" max="670" step="1" value="0"></label><label>倍率<input data-image-transform="scale" aria-label="選択装飾倍率" type="number" min="0.01" max="4" step="0.01" value="1"></label></div><div class="image-decoration-actions"><button id="image-decoration-lower" type="button" class="control">背面へ</button><button id="image-decoration-raise" type="button" class="control">前面へ</button><button id="image-decoration-reset" type="button" class="control">中央・全体表示</button><button id="image-decoration-delete" type="button" class="control danger">削除</button></div></fieldset><p id="image-off-canvas-status" class="panel-help" role="status" hidden></p><p class="panel-help">最大12枚。先頭が背面、末尾が前面です。画像上で選択・ドラッグするか、数値入力で位置と倍率を調整できます。</p></section>
+          </div>
+          <div class="image-workspace-canvas-block">
+            <div class="studio-proof-header"><span class="panel-kicker">仕上がり確認</span><span>1280 × 670 / PNG</span><button type="button" id="image-export-png" class="control export" aria-describedby="image-export-help" disabled>完成画像（PNG）を保存</button></div>
+            <div class="studio-canvas-wrap"><canvas id="image-thumbnail-canvas" class="image-workspace-canvas" width="1280" height="670" role="img" aria-label="サムネイル出力プレビュー"></canvas><div id="image-canvas-empty" class="studio-empty"><div class="studio-acquisition-art" aria-hidden="true"><span class="studio-acquisition-plate"><span class="studio-acquisition-format">PNG</span><span class="studio-acquisition-index">01 / LOCAL SOURCE</span></span></div><div class="studio-empty-copy"><p class="panel-kicker">MOTOR SUBMASTER / IMAGE IN</p><h3>背景を読み込み、制作開始。</h3><p>タイトル・立ち絵・装飾を重ね、サムネイルに仕上げます。</p><button type="button" id="image-choose-background" class="control">背景画像（PNG）を選ぶ</button></div></div></div>
+            <div class="image-workspace-canvas-actions">
+              <p id="image-export-help" class="control-help">背景画像（PNG）を読み込むと完成画像を保存できます。</p>
+              <p class="panel-help">表示中の仕上がりを、原寸で保存します。</p>
+            </div>
+            <p id="image-workspace-status" class="image-workspace-status studio-feedback" role="status" aria-live="polite"></p>
+          </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="boss-workspace-panel"
+      class="workspace-panel boss-workspace-panel"
+      role="tabpanel"
+      aria-labelledby="boss-workspace-tab"
+      tabindex="0"
+      hidden
+    >
+      <div class="panel boss-workspace-shell">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">ENCOUNTER STUDIO / BOSS DATA</p>
+            <h2>NPCジェネレーター：ボスデータ</h2>
+            <p class="workspace-purpose">卓で使う数値付きNPCデータを作ります。人物設定を作る「NPCジェネレーター：設定」とは別の機能です。</p>
+          </div>
+          <div class="panel-heading-actions"><button type="button" class="control help-control" data-open-help>この画面の使い方</button></div>
+        </div>
+        <div class="boss-route" aria-label="作成の流れ"><button type="button" data-boss-route-step="1">01 <b>NPCを用意</b></button><button type="button" data-boss-route-step="2">02 <b>確認・調整</b></button><button type="button" data-boss-route-step="3">03 <b>コピー</b></button></div>
+        <form id="boss-generation-config" class="boss-config" data-boss-config>
+          <section class="boss-config-section boss-purpose-section" aria-labelledby="boss-purpose-heading">
+            <div class="boss-config-section-heading"><span>A</span><h3 id="boss-purpose-heading">生成用途</h3></div>
+            <div class="boss-config-fields">
+              <label class="boss-purpose">用途<select name="profile" data-boss-profile><option value="generic" selected>NPCデータを生成</option><option value="scenario">ランダム生成シナリオ用</option></select></label>
+              <div class="boss-scenario-context" data-boss-scenario-context hidden>
+                <label>シナリオ<select name="scenarioProfile" data-boss-scenario-profile><option value="deadly-visions" selected>デッドリー・ヴィジョンズ</option><option value="scout-daily">スカウト部門の日常</option></select></label>
+                <a class="boss-scenario-source-link" data-boss-scenario-link href="https://note.com/koyazawa_ninja/n/n12459d72a260" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer" hidden>対応シナリオを開く ↗</a>
+              </div>
+            </div>
+          </section>
+          <section class="boss-config-section boss-basic-section" aria-labelledby="boss-basic-heading">
+            <div class="boss-config-section-heading"><span>B</span><h3 id="boss-basic-heading">基本条件</h3></div>
+            <div class="boss-config-fields">
+              <label>レベル<select name="level" required><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></label>
+              <div class="boss-generic-controls" data-boss-generic-controls>
+                <label>生成数<select name="generationCount" required><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
+                <label class="boss-check"><input name="perNpcLevel" type="checkbox" data-boss-per-npc-level> NPCごとにレベルを指定</label>
+                <div class="boss-generic-levels" data-boss-generic-levels hidden></div>
+              </div>
+              <div class="boss-scenario-controls" data-boss-scenario-controls hidden>
+                <label>PC人数<input name="pcCount" type="number" min="1" max="99" value="2" required></label>
+              </div>
+            </div>
+          </section>
+          <section class="boss-config-section boss-method-section" aria-labelledby="boss-method-heading">
+            <div class="boss-config-section-heading"><span>C</span><h3 id="boss-method-heading">生成方式・特殊条件</h3></div>
+            <div class="boss-config-fields">
+              <label>ニンジャネーム<select name="nameMode" data-boss-name-mode><option value="random" selected>ニンジャネームをランダム決定</option><option value="unset">ニンジャネーム未設定</option></select></label>
+              <div class="boss-generic-options" data-boss-generic-options>
+                <label>補助表6の初期設定<select name="supplementalDefault"><option value="karma">カルマ：善</option><option value="arch" selected>高位ソウル</option></select></label>
+              </div>
+              <div class="boss-scenario-special" data-boss-scenario-special hidden>
+                <div class="boss-scenario-options" data-boss-deadly-options>
+                  <label class="boss-check"><input name="levelDifference" type="checkbox"> ◇レベル差のあるNPC</label>
+                  <label>もう一方のレベル<select name="secondLevel" disabled required><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></label>
+                  <label class="boss-check"><input name="selectionBypass" type="checkbox"> 初期生成数−1・選択省略</label>
+                  <p class="boss-inline-help">補助表6は出目を確認してから、カルマ：善 / 高位ソウルを選べます。</p>
+                </div>
+                <div class="boss-scenario-options" data-boss-scout-options hidden>
+                  <label class="boss-check"><input name="scoutArchReplacement" type="checkbox"> 補助表6の6を高位ソウルとして扱う</label>
+                  <p class="boss-inline-help">スカウト部門の日常ではPC1・PC2の生成ルールを使います。</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="boss-generation-core" aria-labelledby="boss-generation-core-heading">
+            <div class="boss-generation-core-stage" data-boss-generation-core aria-hidden="true"><canvas></canvas><span class="boss-core-label">GENERATION CORE</span><span class="boss-core-readout">6 PLATES / LOCAL SYNTHESIS</span></div>
+            <div class="boss-generation-console">
+              <p class="panel-kicker">01 / GENERATE</p>
+              <h3 id="boss-generation-core-heading">生成を実行</h3>
+              <button type="submit" class="control primary">NPCを生成</button>
+              <p class="boss-status" data-boss-status data-level="idle" role="status" aria-live="polite">生成準備完了</p>
+            </div>
+          </section>
+        </form>
+        <div class="boss-bank" data-boss-bank></div>
+        <section class="boss-encounter" data-boss-scenario-output aria-labelledby="boss-encounter-heading" hidden>
+          <div><p class="panel-kicker">03 / 補正・コピー</p><h3 id="boss-encounter-heading">卓の人数に合わせる</h3><p>基礎能力と出目はそのまま。デッドリー・ヴィジョンズの人数補正は出撃データへ別に反映します。</p></div>
+          <div class="boss-adjustment-fields">
+            <label>PC3の強化<select form="boss-generation-config" name="pc3Enhancement" disabled><option value="stats">強化1：能力・ダイス</option><option value="minion">強化2：外部ミニオン</option></select></label>
+          </div>
+        </section>
+        <section class="boss-selected-actions" data-boss-selected-actions hidden>
+          <span class="clarity-tip"><button type="button" class="control" data-boss-copy-selected="base" aria-describedby="boss-selected-base-tip">選択NPCの基礎データをコピー</button><span id="boss-selected-base-tip" class="clarity-tip-bubble" role="tooltip">選択したNPCそれぞれの、人数補正前の基礎データをまとめてコピーします。</span></span>
+          <span class="clarity-tip"><button type="button" class="control accent" data-boss-copy-selected="final" aria-describedby="boss-selected-final-tip">選択NPCの出撃データをコピー</button><span id="boss-selected-final-tip" class="clarity-tip-bubble" role="tooltip">選択確定後の出撃データをまとめてコピーします。人数補正があるシナリオでは補正後の値です。</span></span>
+        </section>
+        <section class="boss-generated-actions" data-boss-generated-actions hidden>
+          <p><strong>生成NPCはすべて使用できます。</strong> 必要なデータを個別またはまとめてコピーしてください。</p>
+          <button type="button" class="control accent" data-boss-copy-generated>生成NPCをまとめてコピー</button>
+        </section>
+      </div>
+    </section>
+
+    <section
+      id="combat-workspace-panel"
+      class="workspace-panel combat-analysis-panel"
+      role="tabpanel"
+      aria-labelledby="combat-workspace-tab"
+      tabindex="0"
+      hidden
+    >
+      <div class="panel combat-analysis-shell" data-combat-analysis-root></div>
     </section>
 
     <footer>
       <p>ローカル重点 · 入力したシナリオデータを外部へ送信しません。</p>
     </footer>
 
+    <dialog id="presentation-preferences-dialog" class="instructions-dialog preferences-dialog" aria-labelledby="preferences-heading">
+      <form method="dialog" class="dialog-shell">
+        <div class="panel-heading dialog-heading">
+          <div><p class="panel-kicker">PRESENTATION / 表示環境</p><h2 id="preferences-heading">表示設定</h2></div>
+          <button class="icon-control" aria-label="表示設定を閉じる" value="close">×</button>
+        </div>
+        <div class="preferences-content">
+          <p class="preferences-intro">作業に合わせて表示を調整できます。変更はすぐに反映されます。</p>
+          <fieldset><legend>表示密度</legend><div class="preference-options">
+            <label><input type="radio" name="density" value="standard" checked><span>標準<small>余白を保ち、ゆったり表示</small></span></label>
+            <label><input type="radio" name="density" value="compact"><span>高密度<small>操作部と見出しをコンパクトに</small></span></label>
+          </div></fieldset>
+          <fieldset><legend>画面演出</legend><div class="preference-options">
+            <label><input type="radio" name="effects" value="standard" checked><span>標準<small>光の信号、操作の手応え、結果へ収束する演出</small></span></label>
+            <label><input type="radio" name="effects" value="reduced"><span>抑制<small>同じ美しい表示を、動きのない静止状態で</small></span></label>
+          </div></fieldset>
+          <fieldset><legend>配色</legend><div class="preference-options">
+            <label><input type="radio" name="palette" value="standard" checked><span>標準<small>操作の役割を豊かな色で表示</small></span></label>
+            <label><input type="radio" name="palette" value="accessible"><span>色覚サポート<small>明暗差と線の形で識別を補助</small></span></label>
+          </div></fieldset>
+          <p class="preferences-note">OSの動きの抑制を尊重します。設定はマップ・NPC・ボスデータ・画像制作・判定・戦闘処理解析の表示に反映されます。制作中の内容・保持した結果・解析条件・マップの配色・表示倍率は変わりません。</p>
+          <p id="preferences-feedback" class="preferences-feedback" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dialog-actions"><button type="button" id="reset-presentation-preferences" class="control">初期設定に戻す</button><button class="control primary" value="close">閉じる</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="external-tools-dialog" class="instructions-dialog external-tools-dialog" aria-labelledby="external-tools-heading">
+      <div class="dialog-shell">
+        <div class="panel-heading dialog-heading">
+          <div><p class="panel-kicker">UTILITY / LOCAL LINKS</p><h2 id="external-tools-heading">外部リンク保存</h2></div>
+          <button type="button" id="close-external-tools" data-close-external-tools class="icon-control" aria-label="外部リンク保存を閉じる">×</button>
+        </div>
+        <div class="external-tools-content">
+          <p class="external-tools-intro">リンクの登録は任意です。未登録でもMOTOR SUBMASTERは利用できます。</p>
+          <p id="external-tools-feedback" class="external-tools-feedback" role="status" aria-live="polite"></p><button type="button" id="undo-external-tool" class="control" hidden>削除を元に戻す</button>
+          <details id="external-tool-add-details" class="external-tool-add-details">
+            <summary class="control">＋ 外部リンクを追加</summary>
+            <form id="external-tool-form" class="external-tool-form">
+            <label>表示名<input id="external-tool-name" name="name" type="text" maxlength="80" autocomplete="off" required></label>
+            <label>URL<input id="external-tool-url" name="url" type="url" maxlength="2048" inputmode="url" autocomplete="url" placeholder="https://example.com/" required></label>
+            <div class="external-tool-form-actions"><button type="submit" id="save-external-tool" class="control primary">追加</button><button type="button" id="cancel-external-tool" class="control" hidden>編集をやめる</button></div>
+            </form>
+          </details>
+          <div class="external-tools-list-heading"><h3>登録済みリンク</h3><span id="external-tools-count" aria-label="登録数">000 / 127</span></div>
+          <p id="external-tools-empty" class="external-tools-empty">登録された外部リンクはありません。「＋ 外部リンクを追加」から表示名とURLを入力すると、いつでも開けるリンクを追加できます。</p>
+          <ul id="external-tools-list" class="external-tools-list" aria-label="登録済み外部リンク"></ul>
+        </div>
+        <div class="dialog-actions"><button type="button" id="close-external-tools-secondary" data-close-external-tools class="control primary">閉じる</button></div>
+      </div>
+    </dialog>
+
     <dialog id="help-dialog" class="instructions-dialog help-dialog" aria-labelledby="help-heading">
       <form method="dialog" class="dialog-shell">
         <div class="panel-heading dialog-heading">
           <div>
-            <p class="panel-kicker">ガイド / マップ作成</p>
+            <p class="panel-kicker">MOTOR SUBMASTER / 操作ガイド</p>
             <h2 id="help-heading">使い方</h2>
           </div>
           <button type="submit" class="icon-control" aria-label="使い方を閉じる">×</button>
         </div>
+        <nav id="help-workspace-tabs" class="help-workspace-tabs" role="tablist" aria-label="使い方の項目">
+          <button id="help-map-tab" type="button" class="control" role="tab" aria-controls="help-map-panel" aria-selected="true">マップ作成</button>
+          <button id="help-image-tab" type="button" class="control" role="tab" aria-controls="help-image-panel" aria-selected="false" tabindex="-1">サムネ・挿絵・アイテム画像</button>
+          <button id="help-npc-tab" type="button" class="control" role="tab" aria-controls="help-npc-panel" aria-selected="false" tabindex="-1">NPCジェネレーター：設定</button>
+          <button id="help-boss-tab" type="button" class="control" role="tab" aria-controls="help-boss-panel" aria-selected="false" tabindex="-1">NPCジェネレーター：ボスデータ</button>
+          <button id="help-combat-tab" type="button" class="control" role="tab" aria-controls="help-combat-panel" aria-selected="false" tabindex="-1">判定・戦闘処理解析</button>
+        </nav>
         <div class="help-content">
+        <div id="help-map-panel" role="tabpanel" aria-labelledby="help-map-tab" tabindex="0">
           <section aria-labelledby="help-overview-heading">
             <h3 id="help-overview-heading">このアプリでできること</h3>
-            <p>TRPG用マップを、AIに設計してもらう、空のシートに自分で描く、以前のマップデータを使う、の3通りで用意できます。MapSpec（マップ仕様書）を使う場合は、点検とプレビューを確認して、ExcelやGoogle スプレッドシートで使えるXLSXにできます。</p>
+            <p>このアプリにはマップ作成、画像制作、NPC設定、ボスデータ、判定・戦闘処理解析の5つのWorkspaceがあります。この項目ではマップ作成を案内します。TRPG用マップは、AIに設計してもらう、空のシートに自分で描く、以前のマップデータを使う、の3通りで用意できます。マップデータを点検してプレビューを確認したら、Excel形式（.xlsx）で保存できます。保存したファイルはExcelやGoogle スプレッドシートで使えます。</p>
           </section>
           <section aria-labelledby="help-sample-heading">
             <h3 id="help-sample-heading">まず試してみたい</h3>
-            <p>まず試すなら「サンプルを開く」から同梱された6種類のマップを選びます。アプリ起動時は工業街のサンプルが表示され、検証結果とプレビューをすぐ確認できます。</p>
-            <p>サンプルから自分のJSONへ入れ替えるときは、「入力を空にする」でマップデータ JSONを空にしてから貼り付けられます。</p>
+            <p>まず試すなら「サンプルを開く」から同梱された6種類のマップを選びます。アプリ起動時は工業街のサンプルが表示され、点検結果とプレビューをすぐ確認できます。</p>
+            <p>サンプルから別のマップデータへ入れ替えるときは、「入力を空にする」で入力欄を空にしてから貼り付けられます。</p>
           </section>
           <section aria-labelledby="help-ai-heading">
             <h3 id="help-ai-heading">AIにマップを作ってもらいたい</h3>
             <ol>
               <li>「AIに渡す作成指示」を開き、「全文をコピー」または「指示文を保存」を使います。</li>
               <li>コピーした指示文の末尾にある「今回のマップ要件」へ、シナリオの概要や希望を書きます。</li>
-              <li>指示文をChatGPT / Gemini等のAIサービスへ貼り付けて送信します。</li>
-              <li>返ってきたマップデータ JSONを「マップデータ JSON」へ貼り付け、「マップを点検・表示」を押します。</li>
-              <li>プレビューと検証結果を確認し、要修正がなければ「XLSXを書き出す」を押します。</li>
+              <li>指示文を外部の対話AIサービスへ貼り付けて送信します。</li>
+              <li>AIから返ってきたマップデータを「マップデータ」欄へ貼り付け、「マップを点検・表示」を押します。</li>
+              <li>プレビューと点検結果を確認し、要修正がなければ「Excel形式（.xlsx）で保存」を押します。</li>
             </ol>
+            <p>ヘッダーの「外部リンク保存」では、好みのAIツールや参考サイトのリンクを、ブラウザが許可する範囲でローカル保存できます。</p>
             <p>AIの返答が<code>```json</code>のようなコード枠で囲まれていても、そのまま貼り付けられます。</p>
           </section>
           <section aria-labelledby="help-manual-heading">
             <h3 id="help-manual-heading">自分でマップを描きたい</h3>
-            <p>MapSpec（マップ仕様書）を書かずに自分で描く場合は、「空のマップシートを作る」を押します。横幅（マス）と縦幅（マス）を指定し、「XLSXを作る」で空のXLSXを作成します。保存したファイルをExcelやGoogle スプレッドシートで直接編集してください。凡例の見本は、セルの色・罫線・文字を決める参考にできます。1マス約1.5〜2mは目安です。</p>
-            <p>この手動用XLSXはMapSpec（マップ仕様書）ではありません。編集したXLSXをアプリへ戻してMapSpecへ変換する機能はありません。</p>
+            <p>MapSpec（マップ仕様書）を書かずに自分で描く場合は、「空のマップシートを作る」を押します。横幅（マス）と縦幅（マス）を指定し、「Excel形式で作る」で空の表計算ファイルを作成します。保存したファイルはExcelやGoogle スプレッドシートで直接編集できます。凡例の見本は、セルの色・罫線・文字を決める参考にできます。1マス約1.5〜2mは目安です。</p>
+            <p>この手動用ファイルはアプリで再利用するマップデータ（JSON）ではありません。編集したファイルをアプリへ戻してマップデータへ変換する機能はありません。</p>
           </section>
           <section aria-labelledby="help-existing-heading">
             <h3 id="help-existing-heading">以前のマップデータを開きたい</h3>
-            <p>保存済みのMapSpec JSON（.json）がある場合は、「JSONを開く」で選ぶか、「マップデータ JSON」へ貼り付けて使えます。貼り付けた場合は「マップを点検・表示」を押し、検証結果とプレビューを確認してから「XLSXを書き出す」を押します。必要なら「JSONを保存」でMapSpec JSONを手元に保存できます。</p>
-            <p>「JSONを開く」はマップデータ JSON用です。手動作成したXLSXやGoogle スプレッドシートの内容を開く操作ではありません。</p>
+            <p>AIから受け取ったマップデータや、以前に保存したマップデータを使えます。保存済みのマップデータ（JSON / .json）は「マップデータを開く」で選ぶか、「マップデータ」欄へ貼り付けます。点検結果とプレビューを確認し、要修正がなければ「Excel形式（.xlsx）で保存」を押します。必要なら「マップデータを保存」で、アプリで再利用するデータを手元に保存できます。</p>
+            <p>マップデータ（JSON）はアプリで再利用するデータ、Excel形式（.xlsx）はExcelやGoogle スプレッドシートで使う資料です。表計算ファイルをアプリで開く機能はありません。</p>
           </section>
           <section aria-labelledby="help-validation-heading">
             <h3 id="help-validation-heading">「要修正」「注意」が出た</h3>
-            <p>「検証結果」を確認してください。「要修正」は入力を直す必要があり、「XLSXを書き出す」は使えません。入力を直してから、もう一度「マップを点検・表示」を押します。「注意」は確認や助言です。内容を確認し、問題なければ「XLSXを書き出す」を使えます。AIが作ったJSONなら、表示された要修正の内容をAIへ渡して修正を頼むこともできます。</p>
+            <p>「点検結果」を確認してください。「要修正」は入力を直す必要があり、「Excel形式（.xlsx）で保存」は使えません。入力を直してから、もう一度「マップを点検・表示」を押します。入力を編集中は、前回点検時のプレビューが表示されることがありますが、現在の入力とは未同期です。再点検が成功すると新しい表示へ更新され、入力を空にすると前の表示も消えます。「注意」は確認や助言です。内容を確認し、問題なければ「Excel形式（.xlsx）で保存」を使えます。AIが作ったマップデータであれば、表示された要修正の内容をAIへ渡して修正を頼むこともできます。</p>
+          </section>
+          <section aria-labelledby="help-neya-reference-heading">
+            <h3 id="help-neya-reference-heading">ネヤ式キャラシート参照</h3>
+            <p>参加PCのネヤ式キャラクターシートをGoogle Sheetsで参照するための補助シートです。URLの貼り付けと初回のアクセス許可は手動で行います。</p>
+            <ol>
+              <li>「Excelにネヤ式参照シートを追加」をONにして、Excel形式（.xlsx）で保存します。</li>
+              <li>保存したファイルをGoogle Sheetsで開くかインポートします。</li>
+              <li>追加された参照シートへ、参加PCごとのネヤ式キャラクターシートURLを貼り付けます。</li>
+              <li>初回接続時に求められた場合は、Google Sheets上で参照元へのアクセスを許可します。</li>
+              <li>表示された値を確認し、「イニシアチブ」から「緊急」までの必要な行のデータ範囲をコピーします。URL欄はコピー範囲に含めません。</li>
+              <li>Mapの対応する位置へ「値のみ貼り付け」を行います。通常の貼り付けでは参照用の数式もコピーされます。</li>
+              <li>転記後のMapは独立して編集できます。「名前：アイコン」やセッション中の値も通常どおり変更できます。</li>
+            </ol>
+            <p>参照機能はGoogle Sheets向けです。Excelで参照式が評価されなくても、通常のMapはそのまま利用できます。</p>
           </section>
           <section aria-labelledby="help-npc-heading">
             <h3 id="help-npc-heading">NPCを作りたい</h3>
@@ -229,11 +592,37 @@
           </section>
           <section aria-labelledby="help-privacy-heading">
             <h3 id="help-privacy-heading">データの扱い</h3>
-            <p>このアプリに貼り付けたマップデータは、アプリから自動的に外部へ送信されません。ただし、ChatGPTやGeminiなどへ自分で貼り付けた内容は、そのAIサービスへ送信されます。</p>
+            <p>このアプリに貼り付けたマップデータは、アプリから自動的に外部へ送信されません。ただし、ご自身で外部のAIサービスへ貼り付けた内容は、そのサービスへ送信されます。</p>
           </section>
         </div>
+        <div id="help-npc-panel" role="tabpanel" aria-labelledby="help-npc-tab" tabindex="0" hidden>
+          <section><p class="panel-kicker">人物資料 / 現地調達</p><h3>まず試すなら</h3><ol><li>種族（例：人間）、場所・環境（例：ネオン街の路地）、自由入力（例：赤い傘を持つ）はすべて任意です。場所・環境は主に服装や小物、素材、汚れなど人物の背景に影響します。「背景にも反映」は、場所が入力されているときだけ画像背景にも使い、オフまたは場所未入力では単色背景になります。</li><li>一般市民／ニンジャを選び、「すべて生成」で人物を作成します。</li><li>必要な結果を確認して「結果をコピー」を押します。</li></ol></section>
+          <section><h3>画像生成AIへ渡す</h3><p>「AI指示文をコピー」を対話AIへ貼り付けると、画像生成用プロンプトが返ります。そのプロンプトを画像生成AIへ渡します。「AI指示文を編集」では、現在のNPCから本文を作るか、NPCの生成結果を使わず白紙から書き始められます。白紙の本文が空白のままではコピーできないため、本文を入力してからコピーしてください。下書きはリロールしても変わりません。</p><p>生成した立ち絵が単色背景なら「透過PNG化の指示をコピー」を使えます。画像と指示を一緒に、画像編集と透過PNGファイル出力に対応するAIへ渡してください。対応状況はAIや利用環境によって異なります。求めるのは市松模様などを描き込んだ画像ではなく、アルファチャンネルで背景が透明なPNGです。</p></section>
+          <section><h3>作業中のデータ</h3><p>NPCはマップへ自動追加されません。ページを閉じる前に、必要な結果と下書きをコピーしてください。外部AIへの送信は、ご自身で行います。</p></section>
+        </div>
+        <div id="help-image-panel" role="tabpanel" aria-labelledby="help-image-tab" tabindex="0" hidden>
+          <section><p class="panel-kicker">画像資料 / 制作手順</p><h3>まず試すなら</h3><ol><li>サムネイル・挿絵・アイテム画像から用途を選び、内容を入力します。</li><li>「制作指示をコピー」で外部の対話AIへ貼り付けます。</li><li>返答を画像生成AIへ渡し、サムネイルならPNGを「サムネイルを仕上げる」で読み込みます。</li></ol><p>画像生成そのものは外部AIで行います。</p></section>
+          <section><h3>サムネイルを仕上げる</h3><p>「サムネイルを仕上げる」で背景画像（PNG）を読み込み、タイトルと立ち絵・装飾を重ねます。背景は中央・下端に合わせて切り抜きます。表示タイトルを変えても、制作指示の作品名は変わりません。</p><p>追加した立ち絵や装飾は一覧から選択し、表示・順序・位置・倍率を調整できます。画像上のドラッグと数値入力の両方が使えます。先頭が背面、末尾が前面です。</p><p>タイトル下線・最下端アクセント・AI活用開示は個別に切り替えられます。「完成画像（PNG）を保存」で1280 × 670の画像を保存します。</p></section>
+          <section><h3>挿絵・アイテム画像</h3><p>生成した画像は外部AI側で保存・利用してください。この画面での文字・装飾の合成はサムネイル専用です。アイテム画像には、切り抜きやすい単色背景も指定できます。</p></section>
+          <section><h3>単色背景を透過素材にする</h3><p>生成した立ち絵やアイテム画像が単色背景なら「透過PNG化の指示をコピー」を使えます。画像と指示を一緒に、画像編集と透過PNGファイル出力に対応するAIへ渡してください。対応状況はAIや利用環境によって異なります。市松模様や別の背景を描き込んだ画像ではなく、アルファチャンネルで背景が透明なPNGを求める指示です。</p></section>
+          <section><h3>画像の上限と保存</h3><p>装飾は最大12枚。PNGは1枚16 MiB以下・各辺4096px以下・8,388,608画素以下です。画像展開容量は背景と非表示の装飾も含めた全画像の画素数で、合計24 MP相当まで。一時的な画像展開は32 MP相当までです（1 MP相当＝1,048,576画素）。実際のメモリ使用量ではありません。上限を超える画像を選んでも、直前の仕上がりは残ります。</p><p>制作中の内容は、このページを閉じると失われます。必要な制作指示と完成PNGを保存してください。AIへの自動送信は行いません。</p></section>
+        </div>
+        <div id="help-boss-panel" role="tabpanel" aria-labelledby="help-boss-tab" tabindex="0" hidden>
+          <section><p class="panel-kicker">NPC Data / Encounter Draft</p><h3>NPCデータを用意する</h3><p><strong>まず試すなら：</strong>通常のNPCなら「NPCデータを生成」を選び、レベルと生成数を確認します。</p><ol><li>「NPCを生成」を押します。</li><li>必要なNPCデータをコピーします。</li><li>対応するランダム生成シナリオで使うときだけ、用途を切り替えます。</li></ol></section>
+          <section><h3>シナリオプロフィール</h3><p>デッドリー・ヴィジョンズはPC人数に応じた生成・選択と、PC3／PC4以上の人数補正を使います。スカウト部門の日常はPC1／PC2の生成・選択を使い、デッドリー・ヴィジョンズの人数補正は適用しません。</p></section>
+          <section><h3>固定と部分再生成</h3><p>残したい出目は固定できます。各表だけを振り直すか、候補単位で固定されていない表を再生成できます。壁やアーチ級D3は条件がなくなると解除されます。出目を確かめたいときは生成記録を開きます。</p></section>
+          <section><h3>基礎データと出撃データ</h3><p>「基礎データをコピー」は人数補正前の生成候補をコピーします。「出撃データをコピー」は選択確定後のデータをコピーし、人数補正があるシナリオでは補正後の値を含みます。基礎データはそのまま保持され、補正しても基礎能力と出目は変わりません。ミニオン強化は外部準備が必要で、ミニオン自身の万札は0です。</p></section>
+        </div>
+        <div id="help-combat-panel" role="tabpanel" aria-labelledby="help-combat-tab" tabindex="0" hidden>
+          <section><h3>まず試すなら</h3><p>判定成功率は、調べたいダイス数の行と難易度の列が交わるセルを選びます。1つ目をAに保存 → 条件を変える → Bに保存で比較できます。</p><p>表は1〜30Dを初期表示し、「1〜127Dを表示」で1〜127Dへ広げられます。</p></section>
+          <section><h3>判定成功率を調べる</h3><ol><li>「判定成功率」を開きます。</li><li>表からダイス数と難易度を選びます。</li><li>選択した条件の成功率を確認します。</li><li>成功数の内訳と条件比較は最初から表示されます。必要に応じて「出目条件の詳細」を開きます。</li></ol><p>広げた範囲の選択や比較条件は、30Dへ戻しても保持されます。</p></section>
+          <section><h3>出目条件を調べる</h3><p>「出目条件」から【6,6】などを選ぶと、その出目が成立する確率を確認できます。「表にも表示」を有効にすると、成功率表の横に同じ条件の確率を表示します。出目条件の成立率と判定成功率は別の値です。</p></section>
+          <section><h3>ダメージを調べる</h3><ol><li>「ダメージ解析」を開きます。</li><li>最初からある「攻撃1」を編集するか、プリセットで新しい攻撃を追加します。</li><li>攻撃判定・回避・ダメージを入力します。値を変えると結果は自動更新されます。</li><li>期待ダメージ、0ダメージ率、目標ダメージ以上になる確率を確認します。</li></ol></section>
+          <section><h3>プリセットについて</h3><p>プリセットは解析用の初期値です。武器の使用条件、スキル、戦闘スタイルなどは自動では適用しません。実際のルール適用はルールブックと卓の裁定を確認してください。</p></section>
+        </div>
+        </div>
         <div class="dialog-actions">
-          <button type="submit" class="control">閉じる</button>
+          <button type="submit" class="control">作業に戻る</button>
         </div>
       </form>
     </dialog>
@@ -247,7 +636,7 @@
           </div>
           <button type="submit" class="icon-control" aria-label="AIに渡すマップ作成指示を閉じる">×</button>
         </div>
-        <p class="panel-help">全文をコピーまたは指示文を保存 → 一番下の「今回のマップ要件」へ入力 → ChatGPT / Gemini等へ自分で貼り付けて送信</p>
+        <p class="panel-help">全文をコピーまたは指示文を保存 → 一番下の「今回のマップ要件」へ入力 → 外部の対話AIサービスへ自分で貼り付けて送信</p>
         <pre id="ai-instructions-text" tabindex="0"></pre>
         <div class="dialog-actions">
           <button type="button" id="copy-ai-instructions" class="control primary">全文をコピー</button>
@@ -261,13 +650,13 @@
       <form method="dialog" class="dialog-shell">
         <div class="panel-heading dialog-heading">
           <div>
-            <p class="panel-kicker">手動作成 / XLSX</p>
+            <p class="panel-kicker">手動作成 / Excel</p>
             <h2 id="blank-map-sheet-heading">空のマップシートを作る</h2>
           </div>
           <button type="submit" class="icon-control" aria-label="空のマップシート作成を閉じる">×</button>
         </div>
         <div class="blank-map-sheet-content">
-          <p>ExcelやGoogle スプレッドシートで自由に描き込める、空のXLSXを作ります。</p>
+          <p>ExcelやGoogle スプレッドシートで自由に描き込める、空のExcel形式ファイルを作ります。</p>
           <div class="blank-map-sheet-size-inputs">
             <label>横幅（マス）
               <input id="blank-map-width" type="number" min="4" max="64" step="1" value="20" required inputmode="numeric">
@@ -276,10 +665,10 @@
               <input id="blank-map-height" type="number" min="4" max="64" step="1" value="10" required inputmode="numeric">
             </label>
           </div>
-          <p class="blank-map-sheet-guidance">1マスは約1.5〜2m程度の目安です。<br><br>コンパクト: 短辺7〜10 / 長辺16〜20程度<br>広域: 両辺24〜36程度<br><br>その中間や例外も、場所や遊び方に合わせて自由に選べます。</p>
+          <p class="blank-map-sheet-guidance">1マスは約1.5〜2m程度の目安です。<br><br>コンパクト: 短辺7〜10 / 長辺16〜20程度<br>広域: 両辺24〜36程度<br><br>その中間や例外も、場所や遊び方に合わせて自由に選べます。<br><br>このファイルは手動編集用です。編集後にこのアプリへ戻してマップデータへ変換することはできません。</p>
         </div>
         <div class="dialog-actions">
-          <button type="button" id="create-blank-map-sheet" class="control primary">XLSXを作る</button>
+          <button type="button" id="create-blank-map-sheet" class="control primary">Excel形式で作る</button>
           <button type="submit" class="control">閉じる</button>
         </div>
       </form>
