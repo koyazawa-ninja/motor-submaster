@@ -1,10 +1,10 @@
 {
   "formatVersion": "1",
-  "productVersion": "2.0.0",
+  "productVersion": "2.0.1",
   "mapSpecVersion": "0.5",
   "npcGeneratorVersion": "2.3.8",
   "sourceRepository": "koyazawa-ninja/trpg-sheet-map-compiler",
-  "sourceCommit": "62755a320fd3b0fd7f4e0e42741a99037747712c",
+  "sourceCommit": "e6403e2cad144f6b604b136ea1dbf53f4686f4c6",
   "publicRepository": "koyazawa-ninja/motor-submaster",
   "pagesUrl": "https://koyazawa-ninja.github.io/motor-submaster/",
   "exceljsBrowser": {
@@ -28,8 +28,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 3063,
-      "sha256": "5d560258fea3ae728d8581a5def9807cd1408b8ab052265097d71f65c846cf6e"
+      "bytes": 3744,
+      "sha256": "228cbe9a9e142f0ed7c77d40d4139728e36bb94dde5448938990db706f0029af"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
@@ -42,14 +42,14 @@
       "sha256": "8070f2cc804e5ccd8d6cee8d5d7747130fdcfc502fcbb69d76616f00a6b6b599"
     },
     {
-      "path": "assets/index-Cbh8UcYD.js",
-      "bytes": 2055247,
-      "sha256": "330f30e7cfa7c4c9cc3372dc43dddc09690e871527fbc4ed45f672651b0d60b7"
+      "path": "assets/index-kSkJxoVA.js",
+      "bytes": 2056201,
+      "sha256": "a8d4e24728670df23b6b4cb5a2c947bfc316a861b08717351c97ec222eabd3e8"
     },
     {
       "path": "index.html",
       "bytes": 67613,
-      "sha256": "0579da3065341136610d141da907980fbdbdcec16add27ee1e9f88b1d8426edf"
+      "sha256": "934279feea997932cd58bebee3164a37817d51c8836d37eb81393fbcc83293ee"
     }
   ]
 }
